@@ -14,7 +14,7 @@ class ProfileController extends AbstractController
         $user = $this->getUser();
         
         return $this->render('profile/index.html.twig', [
-            'user' => $user,
+            'user' => $user, // 'user' - экземпляр класса, который является сущностью; работает, потому что в сущности есть метод getusername
         ]);
     }
 }
