@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello GlassController!{% endblock %}
+
+{% block body %}
+
+<div>
+    <h1>Stock glass {{ stock.name}} </h1>
+
+    <h2> Buy </h2>
+    <div style="color: green">
+        {% for app in stock.applications %}
+            {% if app.action == BUY %}
+                <span> price: {{ app.price}} | quantity: {{ app.quantity }} | total: {{ app.price * app.quantity }} </span>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <h2> Sell </h2>
+    <div style="color: darkred">
+        {% for app in stock.applications %}
+            {% if app.action == SELL %}
+                <span> price: {{ app.price}} | quantity: {{ app.quantity }} | total: {{ app.price * app.quantity }} </span>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
