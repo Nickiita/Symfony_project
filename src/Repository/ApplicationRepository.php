@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Application;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,41 @@ class ApplicationRepository extends ServiceEntityRepository
         parent::__construct($registry, Application::class);
     }
 
-//    /**
-//     * @return Application[] Returns an array of Application objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function saveApplication(Application $application): void
+    {
+        $this->getEntityManager()->persist($application);
+        $this->getEntityManager()->flush();
+    }
 
-//    public function findOneBySomeField($value): ?Application
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function removeApplication(Application $application): void
+    {
+        $this->getEntityManager()->remove($application);
+        $this->getEntityManager()->flush();
+    } 
+
+    public function findAppropriate(Application $application): ?Application
+    {
+        return $this
+            ->createQueryBuilder('a')
+            ->where('a.stock = :stock')
+            ->andWhere('a.quantity = :quantity')
+            ->andWhere('a.price = :price')
+            ->andWhere('a.action = :action')
+            ->andWhere('a.user != :user')
+
+            ->setParameter('stock_id', $application->getStock()->getId())
+            ->setParameter('quantity', $application->getQuantity())
+            ->setParameter('price', $application->getPrice())
+            ->setParameter('action', $application->getAction()->getOpposite())
+            ->setParameter('user_id', $application->getUser())
+            
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;           
+    }
+
+    public function saveChanges(): void
+    {
+        $this->getEntityManager()->flush();
+    }
 }

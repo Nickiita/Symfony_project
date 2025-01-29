@@ -77,11 +77,16 @@ class Application
         return $this->price;
     }
 
-    public function setPrice(float $price): static
+    public function setPrice(float $price): Application
     {
         $this->price = $price;
 
         return $this;
+    }
+
+    public function getTotal(): float
+    {
+        return $this->price * $this->quantity;
     }
 
     public function getAction(): ?ActionEnum

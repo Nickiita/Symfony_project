@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\DepositaryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use RuntimeException;
+use Twig\Error\RuntimeError;
 
 #[ORM\Entity(repositoryClass: DepositaryRepository::class)]
 class Depositary
@@ -62,6 +64,26 @@ class Depositary
     {
         $this->quantity = $quantity;
 
+        return $this;
+    }
+
+    public function addQuantity(int $quantity): static
+    {
+        if ($quantity <= 0){
+            throw new RuntimeException('Quantity must be greater than 0');
+        }
+
+        $this->quantity += $quantity;
+        return $this;
+    }
+
+    public function subQuantity(int $quantity): static
+    {
+        if ($this->quantity - $quantity <= 0 || $quantity <= 0){
+            throw new RuntimeException('Quantity must be greater than 0');
+        }
+
+        $this->quantity -= $quantity;
         return $this;
     }
 }

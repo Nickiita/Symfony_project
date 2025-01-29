@@ -12,6 +12,7 @@
         {% for app in stock.applications %}
             {% if app.action == BUY %}
                 <span> price: {{ app.price}} | quantity: {{ app.quantity }} | total: {{ app.price * app.quantity }} </span>
+                <br>
             {% endif %}
         {% endfor %}
     </div>
@@ -21,6 +22,7 @@
         {% for app in stock.applications %}
             {% if app.action == SELL %}
                 <span> price: {{ app.price}} | quantity: {{ app.quantity }} | total: {{ app.price * app.quantity }} </span>
+                <br>
             {% endif %}
         {% endfor %}
     </div>
