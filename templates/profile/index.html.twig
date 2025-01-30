@@ -2,23 +2,30 @@
 
 {% block title %}ProfileController!{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+{% endblock %}
+
 {% block body %}
-<div>
+<div class="container">
     {% set total_quantity = 0 %}
     {% set total_balance = 0 %}
     <h1>User name: {{ user.username }}</h1>
     <h1> You have {{ user.portfolios|length }} portfolios: </h1>
 
     {% for portfolio in user.portfolios %}
-        <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks: </span>
-        {% set total_balance = total_balance + portfolio.balance %}
-        <br>
-        {% for depositary in portfolio.depositaries %}
-            {% set total_quantity = total_quantity + depositary.quantity %}
-            Stock name: {{ depositary.stock.name}}, quantity: {{depositary.quantity}}
+
+        <div class="portfolio">
+            <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks: </span>
+            {% set total_balance = total_balance + portfolio.balance %}
             <br>
-        {% endfor %}
-        <br>
+            {% for depositary in portfolio.depositaries %}
+                {% set total_quantity = total_quantity + depositary.quantity %}
+                Stock name: {{ depositary.stock.name}}, quantity: {{depositary.quantity}}
+                <br>
+            {% endfor %}
+            <br>
+        </div>
     {% endfor %}
 
     <h1> Total quantity: {{ total_quantity }} </h1>
