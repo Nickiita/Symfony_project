@@ -123,19 +123,4 @@ class Depositary
         $this->frozenQuantity -= $quantity;
         return $this;
     }
-        
-    public function deductQuantity(int $quantity): static
-    {
-        if ($quantity <= 0) {
-            throw new RuntimeException("Quantity to deduct must be greater than 0");
-        }
-    
-        if ($this->quantity < $quantity) {
-            throw new RuntimeException("Not enough available stocks to deduct");
-        }
-    
-        $this->quantity -= $quantity;
-        return $this;
-    }
-
 }

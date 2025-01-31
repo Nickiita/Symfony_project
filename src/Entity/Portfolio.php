@@ -166,7 +166,6 @@ class Portfolio
         }
     
         $this->frozenBalance += $cost;
-        //$this->balance -= $cost;
     
         return $this;
     }
@@ -184,22 +183,5 @@ class Portfolio
         $this->frozenBalance -= $cost;
     
         return $this;
-    }
-
-    //Метод для уменьшения баланса при выполнении сделки
-
-    public function deductBalance(float $cost): static
-    {
-        if ($cost <= 0) {
-            throw new RuntimeException("Cost to deduct must be greater than 0");
-        }
-
-        if ($this->balance < $cost) {
-            throw new RuntimeException("Not enough balance to deduct");
-        }
-
-        $this->balance -= $cost;
-        return $this;
-    }
-    
+    }    
 }
