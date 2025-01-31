@@ -38,12 +38,14 @@ class ApplicationRepository extends ServiceEntityRepository
             ->andWhere('a.price = :price')
             ->andWhere('a.action = :action')
             ->andWhere('a.user != :user')
+            ->andWhere('a.portfolio = :portfolio')
 
-            ->setParameter('stock_id', $application->getStock()->getId())
+            ->setParameter('stock', $application->getStock()->getId())
             ->setParameter('quantity', $application->getQuantity())
             ->setParameter('price', $application->getPrice())
             ->setParameter('action', $application->getAction()->getOpposite())
-            ->setParameter('user_id', $application->getUser())
+            ->setParameter('user', $application->getUser())
+            ->setParameter('portfolio', $application->getPortfolio())
             
             ->getQuery()
             ->getOneOrNullResult()
