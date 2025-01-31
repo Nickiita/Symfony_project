@@ -10,18 +10,20 @@
 <div class="container">
     {% set total_quantity = 0 %}
     {% set total_balance = 0 %}
+    {% set total_frozen_balance = 0 %}
     <h1>User name: {{ user.username }}</h1>
     <h1> You have {{ user.portfolios|length }} portfolios: </h1>
 
     {% for portfolio in user.portfolios %}
 
         <div class="portfolio">
-            <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance }} money and has stocks: </span>
-            {% set total_balance = total_balance + portfolio.balance %}
+            <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance - portfolio.frozenBalance }} available money and has {{portfolio.frozenBalance}} frozen money. Stocks: </span>
+            {% set total_balance = total_balance + portfolio.balance - portfolio.frozenBalance %}
+            {% set total_frozen_balance = total_frozen_balance + portfolio.frozenBalance %}
             <br>
             {% for depositary in portfolio.depositaries %}
-                {% set total_quantity = total_quantity + depositary.quantity %}
-                Stock name: {{ depositary.stock.name}}, quantity: {{depositary.quantity}}
+                {% set total_quantity = total_quantity + depositary.quantity - depositary.frozenQuantity %}
+                Stock name: {{ depositary.stock.name}}, quantity: {{ depositary.quantity - depositary.frozenQuantity }}
                 <br>
             {% endfor %}
             <br>
@@ -29,6 +31,7 @@
     {% endfor %}
 
     <h1> Total quantity: {{ total_quantity }} </h1>
-    <h1> Total balance: {{ total_balance }} </h1>
+    <h1> Total available balance: {{ total_balance }} </h1>
+    <h1> Total frozen balance: {{ total_frozen_balance }} </h1>
 </div>
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DepositaryRepository;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\Mapping as ORM;
 use RuntimeException;
 use Twig\Error\RuntimeError;
@@ -25,6 +26,9 @@ class Depositary
 
     #[ORM\Column]
     private ?int $quantity = null;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $frozenQuantity = 0;
 
     public function getId(): ?int
     {
@@ -86,4 +90,52 @@ class Depositary
         $this->quantity -= $quantity;
         return $this;
     }
+
+    public function getFrozenQuantity(): int
+    {
+        return $this->frozenQuantity;
+    }
+
+    public function freezeQuantity(int $quantity): static
+    {
+        if ($quantity <= 0) {
+            throw new RuntimeException('Quantity for freeze must be greater than 0');
+        }
+    
+        if ($this->quantity - $this->frozenQuantity < $quantity) {
+            throw new RuntimeException('There are not enough stocks available to freeze');
+        }
+    
+        $this->frozenQuantity += $quantity;
+        return $this;
+    }
+    
+    public function unfreezeQuantity(int $quantity): static
+    {
+        if ($quantity <= 0) {
+            throw new RuntimeException('Quantity for unfreeze must be greater than 0');
+        }
+    
+        if ($this->frozenQuantity < $quantity) {
+            throw new RuntimeException('Can not unfreeze more than frozen');
+        }
+    
+        $this->frozenQuantity -= $quantity;
+        return $this;
+    }
+        
+    public function deductQuantity(int $quantity): static
+    {
+        if ($quantity <= 0) {
+            throw new RuntimeException("Quantity to deduct must be greater than 0");
+        }
+    
+        if ($this->quantity < $quantity) {
+            throw new RuntimeException("Not enough available stocks to deduct");
+        }
+    
+        $this->quantity -= $quantity;
+        return $this;
+    }
+
 }

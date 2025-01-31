@@ -24,6 +24,9 @@ class Portfolio
     #[ORM\Column]
     private ?float $balance = null;
 
+    #[ORM\Column(options: ["default" => 0])]
+    private float $frozenBalance = 0;
+
     /**
      * @var Collection<int, Depositary>
      */
@@ -146,4 +149,57 @@ class Portfolio
 
         return $this;
     }
+
+    public function getFrozenBalance(): float
+    {
+        return $this->frozenBalance;
+    }
+    
+    public function freezeBalance(float $cost): static
+    {
+        if ($cost <= 0) {
+            throw new RuntimeException('Cost for freeze must be greater than 0');
+        }
+    
+        if ($this->balance - $this->frozenBalance < $cost) {
+            throw new RuntimeException('There are not enough money available to freeze');
+        }
+    
+        $this->frozenBalance += $cost;
+        //$this->balance -= $cost;
+    
+        return $this;
+    }
+    
+    public function unfreezeBalance(float $cost): static
+    {
+        if ($cost <= 0) {
+            throw new RuntimeException('Cost for unfreeze must be greater than 0');
+        }
+    
+        if ($this->frozenBalance < $cost) {
+            throw new RuntimeException('Not enough frozen money for unfreeze');
+        }
+    
+        $this->frozenBalance -= $cost;
+    
+        return $this;
+    }
+
+    //Метод для уменьшения баланса при выполнении сделки
+
+    public function deductBalance(float $cost): static
+    {
+        if ($cost <= 0) {
+            throw new RuntimeException("Cost to deduct must be greater than 0");
+        }
+
+        if ($this->balance < $cost) {
+            throw new RuntimeException("Not enough balance to deduct");
+        }
+
+        $this->balance -= $cost;
+        return $this;
+    }
+    
 }
