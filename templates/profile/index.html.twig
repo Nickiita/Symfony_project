@@ -17,13 +17,13 @@
     {% for portfolio in user.portfolios %}
 
         <div class="portfolio">
-            <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance - portfolio.frozenBalance }} available money and has {{portfolio.frozenBalance}} frozen money. Stocks: </span>
-            {% set total_balance = total_balance + portfolio.balance - portfolio.frozenBalance %}
-            {% set total_frozen_balance = total_frozen_balance + portfolio.frozenBalance %}
+            <span> Portfolio {{ portfolio.id }} has {{ portfolio.balance - portfolio.freezeBalance }} available money and has {{portfolio.freezeBalance}} frozen money. Stocks: </span>
+            {% set total_balance = total_balance + portfolio.balance - portfolio.freezeBalance %}
+            {% set total_frozen_balance = total_frozen_balance + portfolio.freezeBalance %}
             <br>
             {% for depositary in portfolio.depositaries %}
-                {% set total_quantity = total_quantity + depositary.quantity - depositary.frozenQuantity %}
-                Stock name: {{ depositary.stock.name}}, quantity: {{ depositary.quantity - depositary.frozenQuantity }}
+                {% set total_quantity = total_quantity + depositary.quantity - depositary.freezeQuantity %}
+                Stock name: {{ depositary.stock.name}}, quantity: {{ depositary.quantity - depositary.freezeQuantity }}
                 <br>
             {% endfor %}
             <br>

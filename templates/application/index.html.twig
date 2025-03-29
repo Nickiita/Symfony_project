@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+ 
+{% block title %}Application index{% endblock %}
+ 
+{% block body %}
+    <h1>My applications</h1>
+ 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Action</th>
+                <th>actions</th>
+            </tr>
+        </thead> 
+        <tbody>
+        {% for application in applications %}
+            <tr>
+                <td>{{ application.id }}</td>
+                <td>{{ application.quantity }}</td>
+                <td>{{ application.price }}</td>
+                <td>{{ application.action.value }}</td>
+                <td>
+                    <a href="{{ path('app_application_show', {'id': application.id}) }}">show</a>
+                    <a href="{{ path('app_application_edit', {'id': application.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_application_new') }}">Create new</a>
+{% endblock %}

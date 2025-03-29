@@ -30,6 +30,12 @@ class Depositary
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     private int $frozenQuantity = 0;
 
+    public function __construct()
+    {
+        $this->quantity = 0;
+        $this->frozenQuantity = 0;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -73,54 +79,46 @@ class Depositary
 
     public function addQuantity(int $quantity): static
     {
-        if ($quantity <= 0){
-            throw new RuntimeException('Quantity must be greater than 0');
-        }
-
         $this->quantity += $quantity;
+
         return $this;
     }
 
     public function subQuantity(int $quantity): static
     {
-        if ($this->quantity - $quantity <= 0 || $quantity <= 0){
-            throw new RuntimeException('Quantity must be greater than 0');
-        }
-
         $this->quantity -= $quantity;
+
         return $this;
     }
 
-    public function getFrozenQuantity(): int
+    public function getFreezeQuantity(): int
     {
         return $this->frozenQuantity;
     }
 
-    public function freezeQuantity(int $quantity): static
+    public function setFreezeQuantity(int $frozenQuantity): static
     {
-        if ($quantity <= 0) {
-            throw new RuntimeException('Quantity for freeze must be greater than 0');
-        }
-    
-        if ($this->quantity - $this->frozenQuantity < $quantity) {
-            throw new RuntimeException('There are not enough stocks available to freeze');
-        }
-    
-        $this->frozenQuantity += $quantity;
+        $this->frozenQuantity = $frozenQuantity;
+
         return $this;
     }
-    
-    public function unfreezeQuantity(int $quantity): static
+
+    public function addFreezeQuantity(int $frozenQuantity): static
     {
-        if ($quantity <= 0) {
-            throw new RuntimeException('Quantity for unfreeze must be greater than 0');
-        }
-    
-        if ($this->frozenQuantity < $quantity) {
-            throw new RuntimeException('Can not unfreeze more than frozen');
-        }
-    
-        $this->frozenQuantity -= $quantity;
+        $this->frozenQuantity += $frozenQuantity;
+
         return $this;
+    }
+
+    public function subFreezeQuantity(int $frozenQuantity): static
+    {
+        $this->frozenQuantity -= $frozenQuantity;
+
+        return $this;
+    }
+
+    public function getActualQuantity(): ?int
+    {
+        return $this->quantity - $this->frozenQuantity;
     }
 }

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+ 
+{% block title %}Deal Logs for Stock {{ stock.name }}{% endblock %}
+ 
+{% block body %}
+    <div>
+        {% for deal_log in deal_logs %}
+            <div>
+                <h1>timestamp: {{ deal_log.timestamp|date("d-m-Y H:i:s") }}, price: {{ deal_log.price }}</h1>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

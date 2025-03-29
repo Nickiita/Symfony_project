@@ -6,46 +6,63 @@ use App\Entity\Application;
 use App\Entity\Depositary;
 use App\Enums\ActionEnum;
 use App\Repository\ApplicationRepository;
+use App\Repository\DepositaryRepository;
 
 class DealService
 {
-    
     public function __construct(
         private readonly ApplicationRepository $applicationRepository,
-    ){
-        
+        private readonly DepositaryRepository $depositaryRepository,
+        private readonly DealLogService $dealLogService
+    ) {
     }
 
-    public function findAppropriate(Application $application): ?Application
+    public function executeDeal(Application $application): void
     {
-        return $this->applicationRepository->findAppropriate($application);
-    }
-
-    public function execute(Application $buyApplication, Application $sellApplication): void
-    {
-        if ($buyApplication->getAction() === ActionEnum::SELL && $sellApplication->getAction() === ActionEnum::BUY){
-            $this->execute($sellApplication, $buyApplication);
+        $appropriateApplication = $this->applicationRepository->findAppropriate($application);
+        if ($appropriateApplication === null) {
             return;
         }
 
-        $buyPortfolio = $buyApplication->getUser()->getPortfolios()->current();
-        $sellPortfolio = $sellApplication->getUser()->getPortfolios()->current();
+        $this->exchange($application, $appropriateApplication);
 
-        $sellPortfolio->getDepositaries()->filter(function (Depositary $depositary) use ($buyApplication){
-            return $depositary?->getStock()->getId() === $buyApplication?->getStock()->getId();
-        })->first();
-        
-    
+        $this->dealLogService->registerDealLog($application, $appropriateApplication);
 
-        $buyPortfolio
-            ->subBalance($sellApplication->getTotal())
-            ->addDepositaryQuantityByStockId($sellApplication->getStock(), $sellApplication->getQuantity())
+        $this->applicationRepository->removeApplication($application);
+        $this->applicationRepository->removeApplication($appropriateApplication);
+    }
+
+    private function exchange(Application $buyApplication, Application $sellApplication): void
+    {
+        if ($buyApplication->getAction() === ActionEnum::SELL) {
+            $this->exchange($sellApplication, $buyApplication);
+            return;
+        }
+
+        $buyApplication
+            ->getPortfolio()
+            ->subBalance($buyApplication->getTotal())
+            ->subFreezeBalance($buyApplication->getTotal())
+            ->addDepositaryQuantityByStock($buyApplication->getStock(), $buyApplication->getQuantity())
         ;
 
-        $sellPortfolio
-            ->addBalance($buyApplication->getTotal())
-            ->subDepositaryQuantityByStock($buyApplication->getStock(),$buyApplication->getQuantity())
+        $sellApplication
+            ->getPortfolio()
+            ->addBalance($sellApplication->getTotal())
+            //->subDepositaryQuantityByStock($sellApplication->getStock(), $sellApplication->getQuantity())
         ;
+
+        // Костыли(
+        $sellDepositary = $sellApplication->getPortfolio()->getDepositaryByStock($sellApplication->getStock());
+        $sellDepositary
+            ->subQuantity($sellApplication->getQuantity())
+            ->subFreezeQuantity($sellApplication->getQuantity())
+        ;
+
+        if ($sellDepositary->getQuantity() === 0) {
+            $this->depositaryRepository->removeDepositary($sellDepositary);
+        }
+        // Конец костылей
 
         $this->applicationRepository->saveChanges();
     }

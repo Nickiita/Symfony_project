@@ -30,7 +30,7 @@ class Portfolio
     /**
      * @var Collection<int, Depositary>
      */
-    #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio')]
+    #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio', cascade: ['persist', 'remove'])]
     private Collection $depositaries;
 
     public function __construct()
@@ -69,16 +69,15 @@ class Portfolio
 
     public function addBalance(float $sum): static
     {
-        assert($sum > 0);
         $this->balance += $sum;
-
+ 
         return $this;
     }
 
     public function subBalance(float $sum): static
     {
         $this->balance -= $sum;
-
+ 
         return $this;
     }
 
@@ -90,43 +89,84 @@ class Portfolio
         return $this->depositaries;
     }
 
+    public function getDepositaryByStock(Stock $stock): ?Depositary
+    {
+        return $this->depositaries->findFirst(
+            function (int $key, Depositary $depositary) use ($stock) {
+                return $depositary->getStock()->getId() === $stock->getId();
+            }
+        );
+    }
+
     public function addDepositaryQuantityByStock(Stock $stock, int $quantity): static
     {
-        $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
-            return $depositary->getStock()->getId() === $stock?->getId();
-        })->first();
-
-        if (!$depositary){
+        $depositary = $this->getDepositaryByStock($stock);
+ 
+        if (!$depositary) {
             $depositary = (new Depositary())
                 ->setStock($stock)
-                ->setPortfolio($this)
             ;
-
-            $this->depositaries->add($depositary);
+ 
+            $this->addDepositary($depositary);
         }
+ 
         $depositary->addQuantity($quantity);
-
+ 
         return $this;
     }
-
-    public function subDepositaryQuantityByStockId(Stock $stock, int $quantity): static
+ 
+    public function subDepositaryQuantityByStock(Stock $stock, int $quantity): static
     {
-        $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
-            return $depositary->getStock()->getId() === $stock?->getId();
-        })->first();
-
-        if ($depositary === null){
-            throw new RuntimeException('Depositary not found for sub quantity');
-        }
-
-        if ($depositary->getQuantity() - $quantity = 0){
+        $depositary = $this->getDepositaryByStock($stock);
+ 
+        $depositary->subQuantity($quantity);
+        $depositary->subFreezeQuantity($quantity);
+ 
+        if ($depositary->getQuantity() === 0) {
             $this->removeDepositary($depositary);
-        }else{
-            $depositary->subQuantity($quantity);
         }
-
+ 
         return $this;
     }
+ 
+
+    // public function addDepositaryQuantityByStock(Stock $stock, int $quantity): static
+    // {
+    //     $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
+    //         return $depositary->getStock()->getId() === $stock?->getId();
+    //     })->first();
+
+    //     if (!$depositary){
+    //         $depositary = (new Depositary())
+    //             ->setStock($stock)
+    //             ->setPortfolio($this)
+    //         ;
+
+    //         $this->depositaries->add($depositary);
+    //     }
+    //     $depositary->addQuantity($quantity);
+
+    //     return $this;
+    // }
+
+    // public function subDepositaryQuantityByStockId(Stock $stock, int $quantity): static
+    // {
+    //     $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
+    //         return $depositary->getStock()->getId() === $stock?->getId();
+    //     })->first();
+
+    //     if ($depositary === null){
+    //         throw new RuntimeException('Depositary not found for sub quantity');
+    //     }
+
+    //     if ($depositary->getQuantity() - $quantity = 0){
+    //         $this->removeDepositary($depositary);
+    //     }else{
+    //         $depositary->subQuantity($quantity);
+    //     }
+
+    //     return $this;
+    // }
         
     public function addDepositary(Depositary $depositary): static
     {
@@ -138,50 +178,76 @@ class Portfolio
         return $this;
     }
 
-    public function removeDepositary(Depositary $depositary): static
+    private function removeDepositary(Depositary $depositary): static
     {
-        if ($this->depositaries->removeElement($depositary)) {
-            // set the owning side to null (unless already changed)
-            if ($depositary->getPortfolio() === $this) {
-                $depositary->setPortfolio(null);
-            }
-        }
-
+        $this->depositaries->removeElement($depositary);
+ 
         return $this;
     }
 
-    public function getFrozenBalance(): float
+    // public function getFrozenBalance(): float
+    // {
+    //     return $this->frozenBalance;
+    // }
+    
+    // public function freezeBalance(float $cost): static
+    // {
+    //     if ($cost <= 0) {
+    //         throw new RuntimeException('Cost for freeze must be greater than 0');
+    //     }
+    
+    //     if ($this->balance - $this->frozenBalance < $cost) {
+    //         throw new RuntimeException('There are not enough money available to freeze');
+    //     }
+    
+    //     $this->frozenBalance += $cost;
+    
+    //     return $this;
+    // }
+    
+    // public function unfreezeBalance(float $cost): static
+    // {
+    //     if ($cost <= 0) {
+    //         throw new RuntimeException('Cost for unfreeze must be greater than 0');
+    //     }
+    
+    //     if ($this->frozenBalance < $cost) {
+    //         throw new RuntimeException('Not enough frozen money for unfreeze');
+    //     }
+    
+    //     $this->frozenBalance -= $cost;
+    
+    //     return $this;
+    // }
+    
+    public function getFreezeBalance(): ?float
     {
         return $this->frozenBalance;
     }
-    
-    public function freezeBalance(float $cost): static
+ 
+    public function setFreezeBalance(float $frozenBalance): static
     {
-        if ($cost <= 0) {
-            throw new RuntimeException('Cost for freeze must be greater than 0');
-        }
-    
-        if ($this->balance - $this->frozenBalance < $cost) {
-            throw new RuntimeException('There are not enough money available to freeze');
-        }
-    
-        $this->frozenBalance += $cost;
-    
+        $this->frozenBalance = $frozenBalance;
+ 
         return $this;
     }
-    
-    public function unfreezeBalance(float $cost): static
+ 
+    public function addFreezeBalance(float $sum): static
     {
-        if ($cost <= 0) {
-            throw new RuntimeException('Cost for unfreeze must be greater than 0');
-        }
-    
-        if ($this->frozenBalance < $cost) {
-            throw new RuntimeException('Not enough frozen money for unfreeze');
-        }
-    
-        $this->frozenBalance -= $cost;
-    
+        $this->frozenBalance += $sum;
+ 
         return $this;
-    }    
+    }
+ 
+    public function subFreezeBalance(float $sum): static
+    {
+        $this->frozenBalance -= $sum;
+ 
+        return $this;
+    }
+ 
+    public function getAvailableBalance(): ?float
+    {
+        return $this->balance - $this->frozenBalance;
+    }
 }
