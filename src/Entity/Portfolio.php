@@ -128,45 +128,6 @@ class Portfolio
  
         return $this;
     }
- 
-
-    // public function addDepositaryQuantityByStock(Stock $stock, int $quantity): static
-    // {
-    //     $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
-    //         return $depositary->getStock()->getId() === $stock?->getId();
-    //     })->first();
-
-    //     if (!$depositary){
-    //         $depositary = (new Depositary())
-    //             ->setStock($stock)
-    //             ->setPortfolio($this)
-    //         ;
-
-    //         $this->depositaries->add($depositary);
-    //     }
-    //     $depositary->addQuantity($quantity);
-
-    //     return $this;
-    // }
-
-    // public function subDepositaryQuantityByStockId(Stock $stock, int $quantity): static
-    // {
-    //     $depositary = $this->getDepositaries()->filter(function (Depositary $depositary) use ($stock){
-    //         return $depositary->getStock()->getId() === $stock?->getId();
-    //     })->first();
-
-    //     if ($depositary === null){
-    //         throw new RuntimeException('Depositary not found for sub quantity');
-    //     }
-
-    //     if ($depositary->getQuantity() - $quantity = 0){
-    //         $this->removeDepositary($depositary);
-    //     }else{
-    //         $depositary->subQuantity($quantity);
-    //     }
-
-    //     return $this;
-    // }
         
     public function addDepositary(Depositary $depositary): static
     {
@@ -184,41 +145,6 @@ class Portfolio
  
         return $this;
     }
-
-    // public function getFrozenBalance(): float
-    // {
-    //     return $this->frozenBalance;
-    // }
-    
-    // public function freezeBalance(float $cost): static
-    // {
-    //     if ($cost <= 0) {
-    //         throw new RuntimeException('Cost for freeze must be greater than 0');
-    //     }
-    
-    //     if ($this->balance - $this->frozenBalance < $cost) {
-    //         throw new RuntimeException('There are not enough money available to freeze');
-    //     }
-    
-    //     $this->frozenBalance += $cost;
-    
-    //     return $this;
-    // }
-    
-    // public function unfreezeBalance(float $cost): static
-    // {
-    //     if ($cost <= 0) {
-    //         throw new RuntimeException('Cost for unfreeze must be greater than 0');
-    //     }
-    
-    //     if ($this->frozenBalance < $cost) {
-    //         throw new RuntimeException('Not enough frozen money for unfreeze');
-    //     }
-    
-    //     $this->frozenBalance -= $cost;
-    
-    //     return $this;
-    // }
     
     public function getFreezeBalance(): ?float
     {

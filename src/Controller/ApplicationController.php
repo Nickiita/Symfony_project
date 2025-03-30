@@ -47,7 +47,10 @@ final class ApplicationController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $application = new Application();
-        $form = $this->createForm(ApplicationType::class, $application);
+        $form = $this->createForm(ApplicationType::class, $application, [ 
+            'is_edit' => false,
+        ]);
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -83,6 +86,7 @@ final class ApplicationController extends AbstractController
         $form = $this->createForm(ApplicationType::class, $application, [
             'old_quantity' => $oldQuantity,
             'old_price' => $oldPrice,
+            'is_edit' => true,
         ]);
         $form->handleRequest($request);
 
