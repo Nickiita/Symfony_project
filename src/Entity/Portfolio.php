@@ -33,9 +33,23 @@ class Portfolio
     #[ORM\OneToMany(targetEntity: Depositary::class, mappedBy: 'portfolio', cascade: ['persist', 'remove'])]
     private Collection $depositaries;
 
+    /**
+     * @var Collection<int, DealLog>
+     */
+    #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'sellPortfolio')]
+    private Collection $sellDealLogs;
+
+    /**
+     * @var Collection<int, DealLog>
+     */
+    #[ORM\OneToMany(targetEntity: DealLog::class, mappedBy: 'buyPortfolio')]
+    private Collection $buyDealLogs;
+
     public function __construct()
     {
         $this->depositaries = new ArrayCollection();
+        $this->sellDealLogs = new ArrayCollection();
+        $this->buyDealLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -175,5 +189,65 @@ class Portfolio
     public function getAvailableBalance(): ?float
     {
         return $this->balance - $this->frozenBalance;
+    }
+
+    /**
+     * @return Collection<int, DealLog>
+     */
+    public function getSellDealLogs(): Collection
+    {
+        return $this->sellDealLogs;
+    }
+
+    public function addSellDealLog(DealLog $sellDealLog): static
+    {
+        if (!$this->sellDealLogs->contains($sellDealLog)) {
+            $this->sellDealLogs->add($sellDealLog);
+            $sellDealLog->setSellPortfolio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSellDealLog(DealLog $sellDealLog): static
+    {
+        if ($this->sellDealLogs->removeElement($sellDealLog)) {
+            // set the owning side to null (unless already changed)
+            if ($sellDealLog->getSellPortfolio() === $this) {
+                $sellDealLog->setSellPortfolio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DealLog>
+     */
+    public function getBuyDealLogs(): Collection
+    {
+        return $this->buyDealLogs;
+    }
+
+    public function addBuyDealLog(DealLog $buyDealLog): static
+    {
+        if (!$this->buyDealLogs->contains($buyDealLog)) {
+            $this->buyDealLogs->add($buyDealLog);
+            $buyDealLog->setBuyPortfolio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBuyDealLog(DealLog $buyDealLog): static
+    {
+        if ($this->buyDealLogs->removeElement($buyDealLog)) {
+            // set the owning side to null (unless already changed)
+            if ($buyDealLog->getBuyPortfolio() === $this) {
+                $buyDealLog->setBuyPortfolio(null);
+            }
+        }
+
+        return $this;
     }
 }
