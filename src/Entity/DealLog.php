@@ -30,6 +30,9 @@ class DealLog
     #[ORM\ManyToOne(inversedBy: 'buyDealLogs')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Portfolio $buyPortfolio = null;
+
+    #[ORM\Column]
+    private ?int $quantity = null;
  
     public function __construct()
     {
@@ -97,6 +100,18 @@ class DealLog
     public function setBuyPortfolio(?Portfolio $buyPortfolio): static
     {
         $this->buyPortfolio = $buyPortfolio;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = $quantity;
 
         return $this;
     }

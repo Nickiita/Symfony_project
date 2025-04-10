@@ -37,4 +37,17 @@ class DealLogRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function findLatestByStock(Stock $stock): ?DealLog
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.stock = :stock')
+            ->setParameter('stock', $stock)
+            ->orderBy('d.timestamp', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
  }
