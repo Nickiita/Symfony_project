@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250131034505 extends AbstractMigration
+final class Version20250222053933 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,20 +20,16 @@ final class Version20250131034505 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE application ADD portfolio_id INT NOT NULL');
+        $this->addSql('CREATE TABLE application (id INT AUTO_INCREMENT NOT NULL, portfolio_id INT NOT NULL, stock_id INT NOT NULL, quantity INT NOT NULL, price DOUBLE PRECISION NOT NULL, action VARCHAR(255) NOT NULL, INDEX IDX_A45BDDC1B96B5643 (portfolio_id), INDEX IDX_A45BDDC1DCD6110 (stock_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE application ADD CONSTRAINT FK_A45BDDC1B96B5643 FOREIGN KEY (portfolio_id) REFERENCES portfolio (id)');
-        $this->addSql('CREATE INDEX IDX_A45BDDC1B96B5643 ON application (portfolio_id)');
-        $this->addSql('ALTER TABLE depositary ADD frozen_quantity INT DEFAULT 0 NOT NULL');
-        $this->addSql('ALTER TABLE portfolio ADD frozen_balance DOUBLE PRECISION DEFAULT \'0\' NOT NULL');
+        $this->addSql('ALTER TABLE application ADD CONSTRAINT FK_A45BDDC1DCD6110 FOREIGN KEY (stock_id) REFERENCES stock (id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE application DROP FOREIGN KEY FK_A45BDDC1B96B5643');
-        $this->addSql('DROP INDEX IDX_A45BDDC1B96B5643 ON application');
-        $this->addSql('ALTER TABLE application DROP portfolio_id');
-        $this->addSql('ALTER TABLE depositary DROP frozen_quantity');
-        $this->addSql('ALTER TABLE portfolio DROP frozen_balance');
+        $this->addSql('ALTER TABLE application DROP FOREIGN KEY FK_A45BDDC1DCD6110');
+        $this->addSql('DROP TABLE application');
     }
 }
