@@ -36,7 +36,7 @@ final class ApplicationController extends AbstractController
     #[Route(path: '/glass/{id}', name: 'app_application_glass', methods: ['GET'])]
     public function glass(Stock $stock): Response
     {
-        return $this->render('application/glass/index.html.twig', [
+        return $this->render('/glass/index.html.twig', [
             'stock' => $stock,
             'BUY' => ActionEnum::BUY,
             'SELL' => ActionEnum::SELL,

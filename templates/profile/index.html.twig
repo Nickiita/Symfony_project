@@ -12,7 +12,7 @@
     {% set total_balance = 0 %}
     {% set total_frozen_balance = 0 %}
     <h1>User name: {{ user.username }}</h1>
-    <h1> You have {{ user.portfolios|length }} portfolios: </h1>
+    <h1>You have {{ user.portfolios|length }} portfolios: </h1>
 
     {% for portfolio in user.portfolios %}
 

@@ -16,10 +16,6 @@ class Application
 
     #[ORM\ManyToOne(inversedBy: 'applications')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\ManyToOne(inversedBy: 'applications')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Portfolio $portfolio = null;
 
     #[ORM\ManyToOne(inversedBy: 'applications')]

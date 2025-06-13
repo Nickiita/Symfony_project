@@ -25,7 +25,7 @@ class Portfolio
     private ?float $balance = null;
 
     #[ORM\Column(options: ["default" => 0])]
-    private float $frozenBalance = 0;
+    private float $freezeBalance = 0;
 
     /**
      * @var Collection<int, Depositary>
@@ -162,33 +162,33 @@ class Portfolio
     
     public function getFreezeBalance(): ?float
     {
-        return $this->frozenBalance;
+        return $this->freezeBalance;
     }
  
-    public function setFreezeBalance(float $frozenBalance): static
+    public function setFreezeBalance(float $freezeBalance): static
     {
-        $this->frozenBalance = $frozenBalance;
+        $this->freezeBalance = $freezeBalance;
  
         return $this;
     }
  
     public function addFreezeBalance(float $sum): static
     {
-        $this->frozenBalance += $sum;
+        $this->freezeBalance += $sum;
  
         return $this;
     }
  
     public function subFreezeBalance(float $sum): static
     {
-        $this->frozenBalance -= $sum;
+        $this->freezeBalance -= $sum;
  
         return $this;
     }
  
     public function getAvailableBalance(): ?float
     {
-        return $this->balance - $this->frozenBalance;
+        return $this->balance - $this->freezeBalance;
     }
 
     /**

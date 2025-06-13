@@ -28,12 +28,12 @@ class Depositary
     private ?int $quantity = null;
 
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
-    private int $frozenQuantity = 0;
+    private int $freezeQuantity = 0;
 
     public function __construct()
     {
         $this->quantity = 0;
-        $this->frozenQuantity = 0;
+        $this->freezeQuantity = 0;
     }
 
     public function getId(): ?int
@@ -93,32 +93,32 @@ class Depositary
 
     public function getFreezeQuantity(): int
     {
-        return $this->frozenQuantity;
+        return $this->freezeQuantity;
     }
 
-    public function setFreezeQuantity(int $frozenQuantity): static
+    public function setFreezeQuantity(int $freezeQuantity): static
     {
-        $this->frozenQuantity = $frozenQuantity;
+        $this->freezeQuantity = $freezeQuantity;
 
         return $this;
     }
 
-    public function addFreezeQuantity(int $frozenQuantity): static
+    public function addFreezeQuantity(int $freezeQuantity): static
     {
-        $this->frozenQuantity += $frozenQuantity;
+        $this->freezeQuantity += $freezeQuantity;
 
         return $this;
     }
 
-    public function subFreezeQuantity(int $frozenQuantity): static
+    public function subFreezeQuantity(int $freezeQuantity): static
     {
-        $this->frozenQuantity -= $frozenQuantity;
+        $this->freezeQuantity -= $freezeQuantity;
 
         return $this;
     }
 
     public function getActualQuantity(): ?int
     {
-        return $this->quantity - $this->frozenQuantity;
+        return $this->quantity - $this->freezeQuantity;
     }
 }
