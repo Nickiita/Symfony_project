@@ -26,7 +26,7 @@ class FreezeService
             $depositaryToSell = $application->getPortfolio()->getDepositaryByStock($application->getStock());
             $depositaryToSell
                 ?->subFreezeQuantity($oldQuantity)
-                ->addFreezeQuantity($application->getQuantity())
+                ?->addFreezeQuantity($application->getQuantity())
             ;
         } elseif ($application->getAction() === ActionEnum::BUY) {
             $application
@@ -43,7 +43,9 @@ class FreezeService
             $depositaryToSell = $application->getPortfolio()->getDepositaryByStock($application->getStock());
             $depositaryToSell?->subFreezeQuantity($application->getQuantity());
         } elseif ($application->getAction() === ActionEnum::BUY) {
-            $application->getPortfolio()->subFreezeBalance($application->getTotal());
+            $application
+                ->getPortfolio()
+                ->subFreezeBalance($application->getTotal());
         }
     }
 }
