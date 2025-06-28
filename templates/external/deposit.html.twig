@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Deposit{% endblock %}
+
+{% block body %}
+
+    <div>
+        {% for deposit in deposits %}
+            <span> Вклад {{ deposit.description }} имеет ставку {{ deposit.rate}}, которую можно было зафиксировать {{ deposit.publicationMonth }} </span>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}
